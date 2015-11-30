@@ -17,13 +17,4 @@ public class HeapSort extends AbstractSort{
             data[i] = heap.getMin();
         }
     }
-
-    public static void main(String[] args) {
-        Integer[] data = new Integer[10];
-        for(int i = 0; i < data.length; i++) {
-            data[i] = data.length - i;
-        }
-        new HeapSort().sort(data);
-        System.out.println(Arrays.toString(data));
-    }
 }
