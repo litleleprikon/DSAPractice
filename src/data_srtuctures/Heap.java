@@ -2,12 +2,12 @@ package data_srtuctures;
 
 /**
  * Created by litleleprikon on 01/11/15.
- * Array-based Max Binary Heap class
+ * Array-based Min Binary Heap class
  */
 public class Heap<T extends Comparable<T>> {
 
     /**
-     * Exception that raises on getting maximum from empty heap
+     * Exception that raises on getting minimum from empty heap
      */
     public static class HeapIsEmptyError extends Error {
         public HeapIsEmptyError() {
@@ -64,7 +64,8 @@ public class Heap<T extends Comparable<T>> {
     public Heap(T[] sourceArray)
     {
         this();
-        data = sourceArray;
+        data = sourceArray.clone();
+        size = sourceArray.length;
         for (int i = size / 2; i >= 0; i--)
         {
             heapify(i);
@@ -136,7 +137,7 @@ public class Heap<T extends Comparable<T>> {
         int i = start - 1;
         int parent = (i - 1) / 2;
 
-        while (i > 0 && ((T)data[parent]).compareTo((T)data[i]) < 0)
+        while (i > 0 && ((T)data[parent]).compareTo((T)data[i]) > 0)
         {
             Object temp = data[i];
             data[i] = data[parent];
@@ -161,10 +162,10 @@ public class Heap<T extends Comparable<T>> {
             leftChild = 2 * i + 1;
             rightChild = 2 * i + 2;
             largestChild = i;
-            if(leftChild < size && ((T)data[leftChild]).compareTo((T)data[largestChild]) > 0) {
+            if(leftChild < size && ((T)data[leftChild]).compareTo((T)data[largestChild]) < 0) {
                 largestChild = leftChild;
             }
-            if (rightChild < size && ((T)data[rightChild]).compareTo((T)data[largestChild]) > 0)
+            if (rightChild < size && ((T)data[rightChild]).compareTo((T)data[largestChild]) < 0)
             {
                 largestChild = rightChild;
             }
@@ -182,10 +183,10 @@ public class Heap<T extends Comparable<T>> {
     }
 
     /**
-     * Main method of Heap-getting maximal element
-     * @return maximal element
+     * Main method of Heap-getting minimal element
+     * @return minimal element
      */
-    public T getMax()
+    public T getMin()
     {
         if(isEmpty()) {
             throw new HeapIsEmptyError();
