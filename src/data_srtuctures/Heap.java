@@ -5,6 +5,16 @@ package data_srtuctures;
  * Array-based Max Binary Heap class
  */
 public class Heap<T extends Comparable<T>> {
+
+    /**
+     * Exception that raises on getting maximum from empty heap
+     */
+    public static class HeapIsEmptyError extends Error {
+        public HeapIsEmptyError() {
+            super("Heap is empty");
+        }
+    }
+
     /**
      * Private array to store heap elements
      */
@@ -48,6 +58,28 @@ public class Heap<T extends Comparable<T>> {
     }
 
     /**
+     * Constructor to build heap from array
+     * @param sourceArray
+     */
+    public Heap(T[] sourceArray)
+    {
+        this();
+        data = sourceArray;
+        for (int i = size / 2; i >= 0; i--)
+        {
+            heapify(i);
+        }
+    }
+
+    /**
+     * Returns is heap empty
+     * @return true if heap empty, else false
+     */
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    /**
      * Increases the size of array, if needed
      */
     private void checkAndAllocate() {
@@ -75,11 +107,11 @@ public class Heap<T extends Comparable<T>> {
     }
 
     /**
-     * Private method to decrease array size if quantity of data lowerElement than array size higher than fourfold
+     * Private method to decrease array size if quantity of data heapify than array size higher than fourfold
      */
     private void deallocate() {
         Object[] temp = new Object[data.length/DEFAULT_INCREASE_FACTOR];
-        System.arraycopy(data, 0, temp, 0, data.length);
+        System.arraycopy(data, 0, temp, 0, size);
         data = temp;
     }
 
@@ -91,6 +123,7 @@ public class Heap<T extends Comparable<T>> {
      */
     public void add(T value)
     {
+        checkAndAllocate();
         data[size++] = value;
         raiseElement(size);
     }
@@ -118,7 +151,7 @@ public class Heap<T extends Comparable<T>> {
      * Method to rebuild heap with main heap property
      * @param start element from which start
      */
-    private void lowerElement(int start) {
+    private void heapify(int start) {
         int i = start;
         int leftChild;
         int rightChild;
@@ -154,24 +187,15 @@ public class Heap<T extends Comparable<T>> {
      */
     public T getMax()
     {
+        if(isEmpty()) {
+            throw new HeapIsEmptyError();
+        }
         T result = (T)data[0];
         data[0] = data[size - 1];
         data[size - 1] = null;
         size--;
-        lowerElement(0);
+        checkAndDealocate();
+        heapify(0);
         return result;
-    }
-
-    public static void main(String[] args) {
-        Heap<Integer> heap = new Heap();
-        heap.add(1);
-        heap.add(2);
-        heap.add(3);
-        heap.add(4);
-        heap.add(5);
-        System.out.println(heap.getMax());
-        System.out.println(heap.getMax());
-        System.out.println(heap.getMax());
-        System.out.println(heap.getMax());
     }
 }
