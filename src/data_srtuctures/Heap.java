@@ -2,12 +2,12 @@ package data_srtuctures;
 
 /**
  * Created by litleleprikon on 01/11/15.
- * Array-based Min Binary Heap class
+ * Array-based Max Binary Heap class
  */
 public class Heap<T extends Comparable<T>> {
 
     /**
-     * Exception that raises on getting minimum from empty heap
+     * Exception that raises on getting maximum from empty heap
      */
     public static class HeapIsEmptyError extends Error {
         public HeapIsEmptyError() {
@@ -183,7 +183,7 @@ public class Heap<T extends Comparable<T>> {
     }
 
     /**
-     * Main method of Heap-getting minimal element
+     * Main method of Heap-getting maximal element
      * @return minimal element
      */
     public T getMin()
