@@ -3,12 +3,7 @@ package data_srtuctures;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
-import java.util.function.Function;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -57,6 +52,87 @@ public class Graph<Data extends Comparable<Data>> {
         private Data data;
 
         /**
+         * Field to set true when visit this vertex
+         */
+        private boolean visited = false;
+
+        /**
+         * Checks is this vertex visited
+         * @return trues if visited else false
+         */
+        public boolean isVisited() {
+            return visited;
+        }
+
+        /**
+         * Sets visited to false
+         */
+        public void clearVisited() {
+            visited = false;
+        }
+
+        /**
+         * Method to set current vertex visible
+         */
+        public void setVisited() {
+            visited = true;
+        }
+
+        public LinkedList<Vertex> dijkstraAlgorithm(Data data) {
+            setVisited();
+            if(this.data == data) {
+                LinkedList<Vertex> result = new LinkedList<Vertex>();
+                result.add(this);
+                return result;
+            }
+            for(Edge edge : incidents) {
+                if(edge == null) {  // deleted edge
+                    continue;
+                }
+                if(!edge.getTo().isVisited()) {
+                    LinkedList<Vertex> found = edge.getTo().dijkstraAlgorithm(data);
+                    if(found != null) {
+                        found.add(this);
+                        return found;
+                    }
+                }
+            }
+            return null;
+        }
+
+        /**
+         * Depth first search algorithm
+         * Used to set all vertexes that reachable to visited
+         */
+        public void dfs() {
+            setVisited();
+            for(Edge edge : incidents) {
+                if(edge == null) {  // deleted edge
+                    continue;
+                }
+                if(!edge.getTo().isVisited()) {
+                    edge.getTo().dfs();
+                }
+            }
+        }
+
+        /**
+         * Method to delete edge to specific vertex
+         * @param to specific vertex
+         */
+        public void deleteEdge(Vertex to) {
+            Edge edgeTo = getEdge(to);
+            incidents.set(edgeTo.getIndex(), null);
+        }
+
+        public void deleteAllEdges() {
+            for(Edge edge : incidents) {
+                edge.getTo().deleteEdge(this);
+            }
+            incidents = new ArrayList<>();
+        }
+
+        /**
          * List of all edges from this vertex
          */
         private List<Edge> incidents = new ArrayList<>();
@@ -72,6 +148,20 @@ public class Graph<Data extends Comparable<Data>> {
         public void addEdge(Vertex to) {
             Edge edge = new Edge(this, to, incidents.size());
             incidents.add(edge);
+        }
+
+        /**
+         * Method to get all incident vertices
+         * @return Linked list of neighbour vertices
+         */
+        public LinkedList<Vertex> getNeighbourVertices() {
+            LinkedList<Vertex> neighbours = new LinkedList<>();
+            for (Edge edge : incidents) {
+                if(edge != null) {
+                    neighbours.add(edge.getTo());
+                }
+            }
+            return neighbours;
         }
 
         public Data[] getNeighbours() {
@@ -92,6 +182,9 @@ public class Graph<Data extends Comparable<Data>> {
          */
         public Edge getEdge(Vertex to) {
             for(Edge edge : incidents) {
+                if(edge == null) {
+                    continue;
+                }
                 if(edge.getTo().equals(to)) {
                     return edge;
                 }
@@ -223,6 +316,15 @@ public class Graph<Data extends Comparable<Data>> {
          */
         public int getIndex() {
             return index;
+        }
+
+        @Override
+        public String toString() {
+            return "Edge{" +
+                    "from=" + from +
+                    ", to=" + to +
+                    ", index=" + index +
+                    '}';
         }
     }
 
