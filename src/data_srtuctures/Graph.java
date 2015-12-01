@@ -21,6 +21,15 @@ public class Graph<Data extends Comparable<Data>> {
     }
 
     /**
+     * Raised in Dijkstra algorithm in case of vertex have not any edges
+     */
+    public static class VertexHaveNoEdges extends Error {
+        public VertexHaveNoEdges() {
+            super("Vertex have no edges");
+        }
+    }
+
+    /**
      * Error class to handle cases of access to vertex with data that not contained in this graph
      */
     public static class GraphNotContainsThisEdgeError extends Error {
@@ -52,6 +61,65 @@ public class Graph<Data extends Comparable<Data>> {
         private Data data;
 
         /**
+         * Weight of way to this vertex from start vertex
+         * Default value is infinity. In case of java ve can use Integer.MAX_VALUE as infinity
+         */
+        private int weight = Integer.MAX_VALUE;
+
+        /**
+         * In case that we set edges to null on removing ve must to find first not null edge
+         * @return first not null edge
+         */
+        private Edge getFirstNotNullNotVisitedEdge() {
+            for(Edge edge : incidents) {
+                if(edge != null && !edge.getTo().isVisited()) {
+                    return edge;
+                }
+            }
+            throw new VertexHaveNoEdges();
+        }
+
+        /**
+         * Method with veeeeery long name
+         * For Dijkstra algorithm search of not visited neighbour vertex with minimal weight
+         * @return edge with end vertex with minimal weight
+         */
+        public Edge getEdgeWithMinimalNotVisitedVertex() {
+            Edge minimal;
+            try {
+                minimal = getFirstNotNullNotVisitedEdge(); // By default set minimal to first edge
+            }
+            catch(VertexHaveNoEdges ex) {
+                return null;  // if vertex have not any unvisited neighbours return null
+            }
+            for(Edge edge : incidents) {
+                if (edge == null) {
+                    continue;
+                }
+                if(edge.getTo().getWeight() < minimal.getTo().getWeight() && !edge.getTo().isVisited()) {
+                    minimal = edge;
+                }
+            }
+            return minimal;
+        }
+
+        /**
+         * Fill all
+         */
+        public void dijkstra() {
+            int neighbourWeight = weight + Edge.EDGE_WEIGHT;
+            for(Edge edge : incidents) {
+                if(edge == null || edge.getTo().isVisited()) {
+                    continue;
+                }
+                if(edge.getTo().getWeight() > neighbourWeight) {
+                    edge.getTo().setWeight(neighbourWeight);
+                }
+            }
+            setVisited();
+        }
+
+        /**
          * Field to set true when visit this vertex
          */
         private boolean visited = false;
@@ -76,28 +144,6 @@ public class Graph<Data extends Comparable<Data>> {
          */
         public void setVisited() {
             visited = true;
-        }
-
-        public LinkedList<Vertex> dijkstraAlgorithm(Data data) {
-            setVisited();
-            if(this.data == data) {
-                LinkedList<Vertex> result = new LinkedList<Vertex>();
-                result.add(this);
-                return result;
-            }
-            for(Edge edge : incidents) {
-                if(edge == null) {  // deleted edge
-                    continue;
-                }
-                if(!edge.getTo().isVisited()) {
-                    LinkedList<Vertex> found = edge.getTo().dijkstraAlgorithm(data);
-                    if(found != null) {
-                        found.add(this);
-                        return found;
-                    }
-                }
-            }
-            return null;
         }
 
         /**
@@ -261,12 +307,35 @@ public class Graph<Data extends Comparable<Data>> {
                     "data=" + data +
                     '}';
         }
+
+        /**
+         * getter of weight
+         * @return weight
+         */
+        public int getWeight() {
+            return weight;
+        }
+
+        /**
+         * setter of weight
+         * @param weight
+         */
+        public void setWeight(int weight) {
+            this.weight = weight;
+        }
     }
 
     /**
      * Class to represent edge between tvo vertexes
      */
     public class Edge {
+
+        /**
+         * Weight of one edge in graph
+         * Because we have unweighted graph, we have constant weight
+         */
+        private static final int EDGE_WEIGHT = 1;
+
         /**
          * Start vertex of edge
          */

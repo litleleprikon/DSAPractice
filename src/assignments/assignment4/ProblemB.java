@@ -100,18 +100,6 @@ class ProblemBGraph<Data extends Comparable<Data>> extends Graph<Data> {
         return "yes";
     }
 
-    /**
-     * Method, that defines is exists the way between two vertices
-     * @param from data to found vertex from
-     * @param to data to found vertex to
-     * @return
-     */
-    private boolean haveWayBetween(Data from, Data to) {
-        Vertex vertexFrom = getVertex(from);
-        checkVertex(vertexFrom, from);
-        return vertexFrom.dijkstraAlgorithm(to) != null;
-    }
-
     private void runFirstConstraint() {
         for(Vertex from : vertices) {
             for(Vertex to : from.getNeighbourVertices()) {
